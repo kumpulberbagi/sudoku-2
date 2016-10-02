@@ -8,6 +8,7 @@ class Sudoku {
         this._allCol = []
         this._allBox = []
         this._curr = ["1", "2", "3", "4", "5", "6", "7", "8", "9"]
+        this._copy
 
     }
 
@@ -24,8 +25,9 @@ class Sudoku {
                     console.log(`at "0" row ${i} and col ${j} :`);
                     // this._sudoku[i][j] = (Math.floor(Math.random() * 8 + 1)).toString()
                     this._curr = ["1", "2", "3", "4", "5", "6", "7", "8", "9"]
-                    this.cekRow(i).cekCol(j).cekBox(i, j) // << method cekBox berhasil cut possibility
-                        // if (this._curr.length == 0) {
+                    this.cekRow(i).cekCol(j).cekBox(i, j) // << method cekBox berhasil cut possibility untuk value awal yang tetap
+                        // if (this._curr.length == 0) { <<< kondisi untuk RESET BOARD, jika aktif akan infinite loop (tapi tidak error)
+                        //     this._sudoku = this._copy
                         //     this.solve()
                         // }
                     var random = this._curr[Math.floor(Math.random() * this._curr.length)]
@@ -253,7 +255,7 @@ class Sudoku {
         this._allBox.push(box8)
         this._allBox.push(box9)
 
-
+        this._copy = this._sudoku // <<< tabel awal cadangan untuk RESET BOARD
         return this._sudoku
     }
 
@@ -269,14 +271,4 @@ var board_string = fs.readFileSync('set-01_sample.unsolved.txt')
 
 var game = new Sudoku(board_string)
 
-// Remember: this will just fill out what it can and not "guess"
-// console.log(game.board());
-// console.log(game.cekRow(0));
-// console.log(game.cekRow(0));
 game.solve()
-    // cekRow(index, value) {
-    //     if (this._allRow[index].indexOf(value)) {
-    //         return false
-    //     } else {
-    //         return true
-    //     }
