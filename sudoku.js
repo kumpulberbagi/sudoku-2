@@ -8,26 +8,11 @@ class Sudoku {
       this.cornerCol = -1
   }
 
-  solveFinal(){
-    for(var i = 0 ; i < this.tampungBoard.length; i++){
-      for(var j = 0 ; j < this.tampungBoard.length; j++){
-        if(this.tampungBoard[i][j] === '0'){
-          console.log(i + " " + j)
-          // if(this.checkNumCol(j, numberCek) === false && this.checkNumSquare(0, j, numberCek) === false){
-          //   console.log(this.tampungBoard[0][j])
-          //   // break
-          // }
-        }
-      }
-    }
-    return this.tampungBoard
-  }
-
-  emptyArr(row, numberCek){
+  emptyArr(){
     var emptyArr = []
     for(var i = 0 ; i < this.tampungBoard.length; i++){
       for(var j = 0 ; j < this.tampungBoard.length; j++){
-        if(this.tampungBoard[i][j] === '0'){
+        if(this.tampungBoard[i][j] === 0){
           emptyArr.push([i,j])
         }
       }
@@ -35,42 +20,66 @@ class Sudoku {
     return emptyArr
   }
 
-  solve() {
-    var row, col
-    var temp = 0
-    for(var i = 0 ; i < this.emptyArr().length ; i++){
-      row = this.emptyArr()[i][0]
-      col = this.emptyArr()[i][1]
-      for(var cek = 9 ; cek > 0 ; cek--){
-        cek = cek.toString()
-        if(this.checkAll(row, col, cek) === true){
-          this.tampungBoard[row][col] = cek
+  solve(board, empty, i) {
+    var limit = 9, row, col, value, found
+    while(i < empty.length){
+      row = empty[i][0]
+      col = empty[i][1]
+      value = board[row][col] + 1
+      found = false
+
+      while(!found && value <= limit){
+
+        if(this.checkAll(board, row, col, value)){
+          found = true
+          board[row][col] = value
+          i++
         }else{
-          // this.tampungBoard[row][col] = 'a'
+          value++
         }
+      }
+      if(!found){
+        board[row][col] = 0
+        // this.solve(board, empty, i--)
+        i--
       }
     }
 
-    return this.tampungBoard;
+    console.log(`Result :\n`);
+    for(var i = 0 ; i < 9 ; i++){
+      let kolom1 = String(board[i]).replace(/,/g, ' ').slice(0, 5)
+      let kolom2 = String(board[i]).replace(/,/g, ' ').slice(6, 11)
+      let kolom3 = String(board[i]).replace(/,/g, ' ').slice(12, 17)
+
+      console.log(` ${kolom1} | ${kolom2} | ${kolom3}`);
+      if(i === 2 || i === 5){
+        console.log(`----------------------`);
+      }
+    }
   }
 
-  checkAll(row, col, cek){
-    if(this.checkNumRow(row, cek) === true &&
-    this.checkNumCol(col, cek) === true &&
-    this.checkNumSquare(row, col, cek) === true){
+  checkAll(board, row, col, cek){
+    if(this.checkNumSquare(board, row, col, cek) === true &&
+    this.checkNumCol(board, col, cek) === true &&
+    this.checkNumRow(board, row, cek) === true){
       return true
     }else{
       return false
     }
   }
 
-  substitue(cornerRow, cornerCol,cek)//untuk checkNumSquare(3x3)
+  substitue(board, cornerRow, cornerCol,cek)//untuk checkNumSquare(3x3)
   {
     var flag = 0;
-    cek = cek.toString()
     for(var i = cornerRow ; i < cornerRow+3 ; i++){
       for(var j = cornerCol ; j < cornerCol+3 ; j++){
-        if(this.tampungBoard[i][j] === cek){
+
+        if(i == 0 && j == 2) {
+          debugger
+          // console.log(`cek perbandingan ${board[i][j]} dengan $cek`)
+        }
+
+        if(board[i][j] === cek){
           flag++
         }else{
           flag += 0
@@ -84,39 +93,40 @@ class Sudoku {
     }
   }
 
-  checkNumSquare(row, col, cek){
+  checkNumSquare(board, row, col, cek){
+
     if(row >= 0 && row < 3){
       if(col >= 0 && col < 3){
-      return this.substitue(0, 0, cek)
+        return this.substitue(board, 0, 0, cek)
       }else if(col >= 3 && col < 6){
-        return this.substitue(0,3, cek)
+        return this.substitue(board, 0, 3, cek)
       }else{
-        return this.substitue(0,6, cek)
+        return this.substitue(board, 0, 6, cek)
       }
     }else if(row >= 3 && row < 6){
       if(col >= 0 && col < 3){
-        return this.substitue(3,0, cek)
+        return this.substitue(board, 3, 0, cek)
       }else if(col >= 3 && col < 6){
 
-        return this.substitue(3,3, cek)
+        return this.substitue(board, 3, 3, cek)
       }else{
-        return this.substitue(3,6, cek)
+        return this.substitue(board, 3, 6, cek)
       }
     }else{
       if(col >= 0 && col < 3){
-        return this.substitue(6,0, cek)
+        return this.substitue(board, 6, 0, cek)
       }else if(col >= 3 && col < 6){
-        return this.substitue(6,3, cek)
+        return this.substitue(board, 6, 3, cek)
       }else{
-        return this.substitue(6,6, cek)
+        return this.substitue(board, 6, 6, cek)
       }
     }
 }
 
-  checkNumCol(col, cek){
+  checkNumCol(board, col, cek){
     var flag = 0;
     for(var row = 0 ; row < 9 ; row++){
-      if(this.tampungBoard[row][col] === cek ){
+      if(board[row][col] === cek ){
         flag++
       }else{
         flag += 0
@@ -129,10 +139,10 @@ class Sudoku {
     }
   }
 
-  checkNumRow(row, cek){
+  checkNumRow(board, row, cek){
     var flag = 0;
     for(var col = 0 ; col < 9 ; col++){
-      if(this.tampungBoard[row][col] === cek ){
+      if(board[row][col] === cek ){
         //console.log(this.tampungBoard[row][col]);
         flag++
       }else{
@@ -152,47 +162,42 @@ class Sudoku {
       this.tampungBoard[i] =  []
       for(var j=0;j<9;j++)
       {
-        this.tampungBoard[i].push(this.board_string[9*i+j])
+        this.tampungBoard[i].push(Number(this.board_string[9*i+j]))
       }
     }
     return this.tampungBoard
   }
 
-  board_random()
-  {
-    for(var i=0;i<this.tampungBoard.length;i++)
-    {
-      for(var j=0;j<this.tampungBoard.length;j++)
-      {
-        if(this.tampungBoard[i][j] === '0')
-        {
-          this.tampungBoard[i][j] = random_number()
-        }
+  printBoard(){
+    console.log(`Before :\n`);
+    for(var i = 0 ; i < 9 ; i++){
+      let kolom1 = String(this.tampungBoard[i]).replace(/,/g, ' ').slice(0, 5)
+      let kolom2 = String(this.tampungBoard[i]).replace(/,/g, ' ').slice(6, 11)
+      let kolom3 = String(this.tampungBoard[i]).replace(/,/g, ' ').slice(12, 17)
+
+      console.log(` ${kolom1} | ${kolom2} | ${kolom3}`);
+      if(i === 2 || i === 5){
+        console.log(`----------------------`);
       }
     }
-    return this.tampungBoard
   }
 }
 
 var fs = require('fs')
-var board_string_test = '609238745274561398853947621486352179792614583531879264945723816328196457167485932'
-var board_string = fs.readFileSync('set-03_peter-norvig_95-hard-puzzles.txt')
+var board_string_test = '700000400020070080003008079900500300060020090001097006000300900030040060009001035'
+var board_string = fs.readFileSync('set-04_peter-norvig_11-hardest-puzzles.txt')
   .toString()
-  .split("\n")[0]
-//test : set-04_peter-norvig_11-hardest-puzzles.txt
-// test : set-03_peter-norvig_95-hard-puzzles.txt
-//test : set-02_project_euler_50-easy-puzzles.txt
+  .split("\n")[10]
+
 var game = new Sudoku(board_string)
 
-function random_number()
-{
-  return (Math.floor(Math.random()*9)+1).toString()
-}
 
 // Remember: this will just fill out what it can and not "guess"
 // game.solve()
-
-console.log(game.board())
+let board = game.board()
+let empty = game.emptyArr()
+game.printBoard()
 console.log('\n');
-console.log(game.solve());
-console.log('\n');
+//console.log(game.board_random());
+game.solve(board, empty, 0)
+console.log('\n')
