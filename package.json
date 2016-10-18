@@ -1,0 +1,22 @@
+{
+  "name": "sudoku-2",
+  "version": "1.0.0",
+  "description": "",
+  "main": "su.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/blanford-fox-2016/sudoku-2.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/blanford-fox-2016/sudoku-2/issues"
+  },
+  "homepage": "https://github.com/blanford-fox-2016/sudoku-2#readme",
+  "dependencies": {
+    "console.table": "^0.7.0"
+  }
+}
