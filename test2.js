@@ -1,20 +1,34 @@
 "use strict"
 
 var fs = require('fs')
-var board_string = fs.readFileSync('set-01_sample.unsolved.txt').toString().split("\n")[0].trim()
+// var board_string = fs.readFileSync('set-01_sample.unsolved.txt').toString().split("\n")[0].trim()
+var board_string = fs.readFileSync('data.txt').toString().split("\n")[0].trim()
+
 
 class Sudoku {
     constructor(board_string) {
         this._board_string = board_string;
         this._papan = [];
         this._tampung = [];
-        this._ulang = 0;
+        this._l = 1
+        this._indexKosong = [];
+        this._index = -1
+    }
+    checkIndex(){
+      for (var i = 0; i < 9; i++) {
+        for (var j = 0; j <9 ; j++) {
+          if (this._papan[i][j] == 0) {
+              this._indexKosong.push([i,j].join(""))
+          }
+        }
+      }
     }
 
     solve() {
         for (var i = 0; i < 9; i++) {
             for (var j = 0; j < 9; j++) {
                 if (this._papan[i][j] == 0) {
+
                     this._tampung = []; //Reset Tampung Jadi Kosong
                     var k = 0;
                     var p = 0;
@@ -84,34 +98,30 @@ class Sudoku {
                         }
                     }
 
-                    // Mengecek Menungkinan Nilai Yang Muncul
-                    var tampungNilai = []
-                    for (var l = 1; l < 10; l++) {
-                        if (this._tampung.indexOf(l.toString()) == -1) {
-                            tampungNilai.push(l.toString())
+                    while (this._l < 10) {
+                        if (this._tampung.indexOf(this._l.toString()) == -1) {
+                            this._papan[i][j] = this._l.toString()
+                            this._l = 1
+                            break;
                         }
-                    }
-                    if(tampungNilai.length==0){
-                      // console.log(this._papan);
-                      // this._ulang++
-                      // console.log(this._ulang);
-                      this._papan = []
-                      this.board()
-                      this.solve()
+                        this._l++
                     }
 
-                    // Memasukkan Nilai ke dalam Array Kosong
-                    if (tampungNilai.length == 1) {
-                        this._papan[i][j] = tampungNilai[0]
-                    } else if (tampungNilai.length > 1) {
-                        var acak = Math.floor(Math.random() * tampungNilai.length)
-                        this._papan[i][j] = tampungNilai[acak]
+                    if (this._papan[i][j] == "0") {
+                        var tmp = this._indexKosong[this._index].split("")
+                        i = Number(tmp[0])
+                        j = Number(tmp[1])
+                        this._l = Number(this._papan[i][j])+1
+                        this._papan[i][j] = "0"
+                        this._index-1
+                    }else{
+                        this._index++
                     }
+                    console.log(this._index);
                 }
             }
         }
-        //Mencetak Hasil
-        return this._papan
+        return  this._papan
     }
 
     board() {
@@ -132,4 +142,5 @@ class Sudoku {
 
 var game = new Sudoku(board_string)
 console.log(game.board())
+game.checkIndex();
 console.log(game.solve())
