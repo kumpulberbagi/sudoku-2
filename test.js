@@ -91,14 +91,6 @@ class Sudoku {
                             tampungNilai.push(l.toString())
                         }
                     }
-                    if(tampungNilai.length==0){
-                      // console.log(this._papan);
-                      // this._ulang++
-                      // console.log(this._ulang);
-                      this._papan = []
-                      this.board()
-                      this.solve()
-                    }
 
                     // Memasukkan Nilai ke dalam Array Kosong
                     if (tampungNilai.length == 1) {
@@ -110,8 +102,26 @@ class Sudoku {
                 }
             }
         }
+
+        //Mengecek Apakah Masih ada Nilai yang belum terisi
+        var status = true;
+        for (var m = 0; m < 9; m++) {
+            if (this._papan[m].indexOf('0') >= 0) {
+                status = false
+                break;
+            }
+        }
         //Mencetak Hasil
-        return this._papan
+        console.log(this._papan);
+        console.log(status);
+        //Jika board masih belum solve sistem akan recrusive
+        if (status == false) {
+            this._ulang++
+            console.log(this._ulang);
+            this._papan = []
+            this.board()
+            this.solve()
+        }
     }
 
     board() {
@@ -132,4 +142,4 @@ class Sudoku {
 
 var game = new Sudoku(board_string)
 console.log(game.board())
-console.log(game.solve())
+game.solve()
